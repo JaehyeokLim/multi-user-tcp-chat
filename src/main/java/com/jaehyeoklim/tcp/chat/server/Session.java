@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import static main.java.com.jaehyeoklim.tcp.chat.util.Logger.log;
+import static main.java.com.jaehyeoklim.tcp.chat.util.ResourceCloser.*;
 
 public class Session implements Runnable {
 
@@ -68,34 +69,12 @@ public class Session implements Runnable {
         }
     }
 
-    public void close() {
+    public synchronized void close() {
         if (isSocketClosed) {
             return;
         }
 
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                log("Error closing input stream: " + e.getMessage());
-            }
-        }
-
-        if (outputStream != null) {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                log("Error closing output stream: " + e.getMessage());
-            }
-        }
-
-        if (socket != null) {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                log("Error closing socket: " + e.getMessage());
-            }
-        }
+        closeAll(socket, inputStream, outputStream);
 
         isSocketClosed = true;
         log("Closing session");

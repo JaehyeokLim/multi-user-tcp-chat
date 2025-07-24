@@ -8,9 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static main.java.com.jaehyeoklim.tcp.chat.util.Logger.log;
+import static main.java.com.jaehyeoklim.tcp.chat.util.ResourceCloser.closeAll;
 
 public class Client {
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
     private final String host;
     private final int port;
 
@@ -49,29 +50,7 @@ public class Client {
         writeHandler.close();
         readHandler.close();
 
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                log("Error closing input stream: " + e.getMessage());
-            }
-        }
-
-        if (outputStream != null) {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                log("Error closing output stream: " + e.getMessage());
-            }
-        }
-
-        if (socket != null) {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                log("Error closing socket: " + e.getMessage());
-            }
-        }
+        closeAll(socket, inputStream, outputStream);
 
         executorService.shutdownNow();
         isSocketClosed = true;
