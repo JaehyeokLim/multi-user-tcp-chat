@@ -3,7 +3,7 @@ package main.java.com.jaehyeoklim.tcp.chat.util;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class Logger {
+public abstract class Logger {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss,SSS");
 
