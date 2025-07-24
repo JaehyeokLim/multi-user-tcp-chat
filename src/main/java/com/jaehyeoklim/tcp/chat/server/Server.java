@@ -1,5 +1,7 @@
 package main.java.com.jaehyeoklim.tcp.chat.server;
 
+import main.java.com.jaehyeoklim.tcp.chat.command.CommandDispatcher;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,13 +13,16 @@ import static main.java.com.jaehyeoklim.tcp.chat.util.Logger.log;
 public class Server {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
     private final SessionManager sessionManager;
+    private final CommandDispatcher commandDispatcher;
+
     private final int port;
 
     private ServerSocket serverSocket;
 
-    public Server(int port, SessionManager sessionManager) {
+    public Server(int port, SessionManager sessionManager, CommandDispatcher commandDispatcher) {
         this.port = port;
         this.sessionManager = sessionManager;
+        this.commandDispatcher = commandDispatcher;
     }
 
     public void start() throws IOException {
@@ -39,7 +44,7 @@ public class Server {
         try {
             while (true) {
                 Socket socket = serverSocket.accept();
-                Session session = new Session(socket, sessionManager);
+                Session session = new Session(socket, sessionManager, commandDispatcher);
                 executorService.submit(session);
                 log("Accepted connection from " + socket.getInetAddress().getHostName());
 

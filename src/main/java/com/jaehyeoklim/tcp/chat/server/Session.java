@@ -1,5 +1,7 @@
 package main.java.com.jaehyeoklim.tcp.chat.server;
 
+import main.java.com.jaehyeoklim.tcp.chat.command.CommandDispatcher;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,14 +15,18 @@ public class Session implements Runnable {
     private final DataInputStream inputStream;
     private final DataOutputStream outputStream;
     private final SessionManager sessionManager;
+    private final CommandDispatcher commandDispatcher;
 
+    private boolean isAuthenticated = false;
     private boolean isSocketClosed = false;
 
-    public Session(Socket socket, SessionManager sessionManager) throws IOException {
+    public Session(Socket socket, SessionManager sessionManager, CommandDispatcher commandDispatcher) throws IOException {
         this.socket = socket;
         this.inputStream = new DataInputStream(socket.getInputStream());
         this.outputStream = new DataOutputStream(socket.getOutputStream());
         this.sessionManager = sessionManager;
+        this.commandDispatcher = commandDispatcher;
+
         this.sessionManager.addSession(this);
     }
 
@@ -29,8 +35,13 @@ public class Session implements Runnable {
         try {
             while (true) {
                 String receivedMessage = inputStream.readUTF();
-                log("Received message from " + socket.getInetAddress().getHostName());
-                sessionManager.sendToAll(receivedMessage);
+                if (!isAuthenticated && !receivedMessage.startsWith("/login") && !receivedMessage.startsWith("/register")) {
+                    send("로그인 후 이용 가능합니다. /login 또는 /register 명령을 사용해주세요.");
+                    continue;
+                }
+
+                log("Received message from " + socket.getInetAddress().getHostName() + ": " + receivedMessage);
+                commandDispatcher.dispatch(receivedMessage, this);
             }
         } catch (IOException e) {
             log("Error reading from socket: " + e.getMessage());
