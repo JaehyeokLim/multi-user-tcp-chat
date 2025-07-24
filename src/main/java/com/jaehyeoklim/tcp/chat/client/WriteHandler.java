@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import static main.java.com.jaehyeoklim.tcp.chat.command.CommandPreprocessor.*;
 import static main.java.com.jaehyeoklim.tcp.chat.util.Logger.log;
 
 public class WriteHandler implements Runnable {
@@ -25,11 +26,10 @@ public class WriteHandler implements Runnable {
 
         try {
             while (true) {
-                String message = scanner.nextLine();
+                String raw = scanner.nextLine();
+                String message = process(raw);
 
-                if (message == null || message.length() == 0) {
-                    continue;
-                }
+                if (message == null || message.isEmpty()) continue;
 
                 outputStream.writeUTF(message);
             }
