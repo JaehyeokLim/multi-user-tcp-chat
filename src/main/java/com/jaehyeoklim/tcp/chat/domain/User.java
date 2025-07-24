@@ -9,11 +9,11 @@ public class User {
     private String password;
     private String name;
 
-    public User(UUID id, String loginId, String name, String password) {
+    public User(UUID id, String loginId, String password, String name) {
         this.id = id;
         this.loginId = loginId;
-        this.name = name;
         this.password = password;
+        this.name = name;
     }
 
     public UUID getId() {
@@ -24,20 +24,12 @@ public class User {
         return loginId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public String getName() {
+        return name;
     }
 
     @Override
