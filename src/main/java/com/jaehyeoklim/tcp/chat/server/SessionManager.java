@@ -5,7 +5,7 @@ import java.util.List;
 
 public class SessionManager {
 
-    private List<Session> sessions = new ArrayList<>();
+    private final List<Session> sessions = new ArrayList<>();
 
     public synchronized void addSession(Session session) {
         sessions.add(session);
