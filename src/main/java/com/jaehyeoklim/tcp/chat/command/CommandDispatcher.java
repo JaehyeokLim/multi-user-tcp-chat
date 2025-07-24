@@ -54,7 +54,7 @@ public class CommandDispatcher {
      */
     public void dispatch(String rawMessage, Session session) {
         if (!rawMessage.startsWith("/")) {
-            System.err.println("명령어 형식 아님: " + rawMessage);
+            System.err.println("Invalid command format: " + rawMessage);
             return;
         }
 
@@ -64,7 +64,7 @@ public class CommandDispatcher {
 
         CommandMethod commandMethod = commandMap.get(command);
         if (commandMethod == null) {
-            session.send("알 수 없는 명령어입니다: " + command);
+            session.send("Unknown command: " + command);
             return;
         }
 
@@ -83,7 +83,7 @@ public class CommandDispatcher {
             try {
                 method.invoke(controller, message, session);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                session.send("명령 처리 중 오류 발생: " + e.getMessage());
+                session.send("An error occurred while processing the command: " + e.getMessage());
             }
         }
     }
