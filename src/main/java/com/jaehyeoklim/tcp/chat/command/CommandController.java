@@ -4,11 +4,9 @@ import main.java.com.jaehyeoklim.tcp.chat.domain.User;
 import main.java.com.jaehyeoklim.tcp.chat.repository.FileRepository;
 import main.java.com.jaehyeoklim.tcp.chat.server.Session;
 import main.java.com.jaehyeoklim.tcp.chat.server.SessionManager;
-import main.java.com.jaehyeoklim.tcp.chat.util.PasswordEncoder;
 
 import java.io.IOException;
 
-import static main.java.com.jaehyeoklim.tcp.chat.util.Logger.log;
 import static main.java.com.jaehyeoklim.tcp.chat.util.PasswordEncoder.*;
 import static main.java.com.jaehyeoklim.tcp.chat.util.UUIDGenerator.*;
 
@@ -29,6 +27,7 @@ public class CommandController {
 
     @Mapping("/exit")
     public void exit(String message,  Session session) throws IOException {
+        sessionManager.sendToAll(session.getUser().getName() + " has left the chat.");
         session.close();
     }
 
