@@ -25,7 +25,9 @@ public class SessionManager {
 
     public synchronized void sendToAll(String message) {
         for (Session session : sessions) {
-            session.send(message);
+            if (session.isAuthenticated()) {
+                session.send(message);
+            }
         }
     }
 }

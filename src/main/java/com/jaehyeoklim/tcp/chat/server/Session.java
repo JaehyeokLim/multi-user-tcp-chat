@@ -1,6 +1,7 @@
 package main.java.com.jaehyeoklim.tcp.chat.server;
 
 import main.java.com.jaehyeoklim.tcp.chat.command.CommandDispatcher;
+import main.java.com.jaehyeoklim.tcp.chat.domain.User;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,6 +18,8 @@ public class Session implements Runnable {
     private final SessionManager sessionManager;
     private final CommandDispatcher commandDispatcher;
 
+    private User user;
+
     private boolean isAuthenticated = false;
     private boolean isSocketClosed = false;
 
@@ -30,17 +33,22 @@ public class Session implements Runnable {
         this.sessionManager.addSession(this);
     }
 
+    public void authenticate(User user) {
+        this.user = user;
+        this.isAuthenticated = true;
+    }
+
     @Override
     public void run() {
         try {
             while (true) {
                 String receivedMessage = inputStream.readUTF();
                 if (!isAuthenticated && !receivedMessage.startsWith("/login") && !receivedMessage.startsWith("/register")) {
-                    send("로그인 후 이용 가능합니다. /login 또는 /register 명령을 사용해주세요.");
+                    send("Please use the /login or /register command.");
                     continue;
                 }
 
-                log("Received message from " + socket.getInetAddress().getHostName() + ": " + receivedMessage);
+                log("Received message from " + socket.getInetAddress().getHostName() + " " + socket.getPort() + ": " + receivedMessage);
                 commandDispatcher.dispatch(receivedMessage, this);
             }
         } catch (IOException e) {
@@ -52,7 +60,7 @@ public class Session implements Runnable {
     }
 
     public void send(String message) {
-        log("Sending message to " + socket.getInetAddress().getHostName());
+        log("Sending message to " + socket.getInetAddress().getHostName() + " " + socket.getPort() + ": " + message);
         try {
             outputStream.writeUTF(message);
         } catch (IOException e) {
@@ -91,5 +99,13 @@ public class Session implements Runnable {
 
         isSocketClosed = true;
         log("Closing session");
+    }
+
+    public boolean isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public User getUser() {
+        return user;
     }
 }
